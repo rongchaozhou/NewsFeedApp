@@ -22,6 +22,7 @@ public class NewsLoader extends AsyncTaskLoader<List<News>> {
 
     @Override
     protected void onStartLoading() {
+        super.onStartLoading();
         forceLoad();
     }
 
@@ -33,7 +34,6 @@ public class NewsLoader extends AsyncTaskLoader<List<News>> {
         if (mUrl == null) {
             return null;
         }
-        List<News> earthquakes = QueryUtils.fetchNewsData(mUrl);
-        return earthquakes;
+        return QueryUtils.fetchNewsData(mUrl);
     }
 }

@@ -24,6 +24,12 @@ import java.util.List;
 public final class QueryUtils {
     private static final String LOG_TAG = QueryUtils.class.getSimpleName();
 
+    private static final int READ_TIMEOUT = 10000;
+    private static final int CONNECT_TIMEOUT = 15000;
+    private static final String REQUEST_METHOD = "GET";
+    private static final int SUCCESSFUL_RESPONSE_CODE = 200;
+
+
     private static final String KEY_JSON_RESPONSE = "response";
     private static final String KEY_JSON_RESULTS = "results";
     private static final String KEY_TITLE = "webTitle";
@@ -32,6 +38,7 @@ public final class QueryUtils {
     private static final String KEY_AUTHOR = "byline";
     private static final String KEY_SECTION = "sectionName";
     private static final String KEY_URL = "webUrl";
+    private static final String DEFAULT_AUTHOR_NAME = "Unknown";
 
     private QueryUtils() {
     }
@@ -48,8 +55,7 @@ public final class QueryUtils {
         } catch (IOException e) {
             Log.e(LOG_TAG, "Problem making the HTTP request.", e);
         }
-        List<News> newsList = extractFeatureFromJson(jsonResponse);
-        return newsList;
+        return extractFeatureFromJson(jsonResponse);
     }
 
     private static URL createUrl(String stringUrl) {
@@ -72,12 +78,12 @@ public final class QueryUtils {
         InputStream inputStream = null;
         try {
             urlConnection = (HttpURLConnection) url.openConnection();
-            urlConnection.setReadTimeout(10000 /* milliseconds */);
-            urlConnection.setConnectTimeout(15000 /* milliseconds */);
-            urlConnection.setRequestMethod("GET");
+            urlConnection.setReadTimeout(READ_TIMEOUT /* milliseconds */);
+            urlConnection.setConnectTimeout(CONNECT_TIMEOUT /* milliseconds */);
+            urlConnection.setRequestMethod(REQUEST_METHOD);
             urlConnection.connect();
 
-            if (urlConnection.getResponseCode() == 200) {
+            if (urlConnection.getResponseCode() == SUCCESSFUL_RESPONSE_CODE) {
                 inputStream = urlConnection.getInputStream();
                 jsonResponse = readFromStream(inputStream);
             } else {
@@ -125,8 +131,15 @@ public final class QueryUtils {
                 JSONObject currentNews = newsArray.getJSONObject(i);
                 String title = currentNews.getString(KEY_TITLE);
                 String date = currentNews.getString(KEY_DATE);
-                JSONObject authorField = currentNews.getJSONObject(KEY_AUTHOR_FIELD);
-                String author = authorField.getString(KEY_AUTHOR);
+
+
+                String author = DEFAULT_AUTHOR_NAME;
+                try {
+                    JSONObject authorField = currentNews.getJSONObject(KEY_AUTHOR_FIELD);
+                    author = authorField.getString(KEY_AUTHOR);
+                } catch (JSONException e) {
+                }
+
                 String section = currentNews.getString(KEY_SECTION);
                 String url = currentNews.getString(KEY_URL);
                 News news = new News(title, date, author, section, url);

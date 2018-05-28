@@ -31,6 +31,8 @@
         style="@style/list_item_text"
         android:layout_alignParentBottom="true"
         android:layout_toLeftOf="@+id/date"
+        android:ellipsize="end"
+        android:maxLength="25"
         android:paddingBottom="@dimen/padding_small"
         android:paddingRight="@dimen/padding_small"
         tools:text="author" />
