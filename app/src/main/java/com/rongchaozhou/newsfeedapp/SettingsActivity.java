@@ -24,6 +24,9 @@ public class SettingsActivity extends AppCompatActivity {
             super.onCreate(savedInstanceState);
             addPreferencesFromResource(R.xml.setting_main);
 
+            Preference topic = findPreference(getString(R.string.topic_setting_key));
+            bindPreferenceSummaryToValue(topic);
+
             Preference item_per_page = findPreference(getString(R.string.item_per_page_setting_key));
             bindPreferenceSummaryToValue(item_per_page);
         }

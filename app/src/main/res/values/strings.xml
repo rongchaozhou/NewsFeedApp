@@ -7,6 +7,31 @@
     <string name="settings_menu_item">Settings</string>
     <string name="settings_title">News Settings</string>
 
+    <string name="topic_setting_default">""</string>
+    <string name="topic_setting_key">topic</string>
+    <string name="topic_setting_label">Topic (Section)</string>
+
+    <string name="topic_settings_all_label">All</string>
+    <string name="topic_settings_all_value">""</string>
+
+    <string name="topic_settings_business_label">Business</string>
+    <string name="topic_settings_business_value">business</string>
+
+    <string name="topic_settings_politic_label">Politic</string>
+    <string name="topic_settings_politic_value">politics</string>
+
+    <string name="topic_settings_tech_label">Technology</string>
+    <string name="topic_settings_tech_value">technology</string>
+
+    <string name="topic_settings_society_label">Society</string>
+    <string name="topic_settings_society_value">society</string>
+
+    <string name="topic_settings_sport_label">Sport</string>
+    <string name="topic_settings_sport_value">sport</string>
+
+    <string name="topic_settings_music_label">Music</string>
+    <string name="topic_settings_music_value">music</string>
+
     <string name="item_per_page_setting_default">50</string>
     <string name="item_per_page_setting_key">item_per_page</string>
     <string name="item_per_page_setting_label">Number of Item (1 - 50)</string>

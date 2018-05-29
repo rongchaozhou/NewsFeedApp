@@ -28,10 +28,12 @@ public class NewsActivity extends AppCompatActivity
     private static final String LOG_TAG = NewsActivity.class.getName();
 
     private static final String GUARDIAN_REQUEST_URL =
-            "https://content.guardianapis.com/search?q=tech&from-date=2018-01-01&api-key=f1ae7f8c-0324-4701-addb-1e03a4489689&show-fields=byline&order-by=newest";
+            "https://content.guardianapis.com/search?from-date=2018-01-01&api-key=f1ae7f8c-0324-4701-addb-1e03a4489689&show-fields=byline&order-by=newest";
 
     private static final int NEWS_LOADER_ID = 1;
-    private static final String QUERY_PARAMETER_NAME = "page-size";
+
+    private static final String QUERY_PARAMETER_PAGE_SIZE = "page-size";
+    private static final String QUERY_PARAMETER_TOPIC = "section";
 
     private NewsAdapter mAdapter;
 
@@ -81,7 +83,7 @@ public class NewsActivity extends AppCompatActivity
 
     @Override
     public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
-        if (key.equals(getString(R.string.item_per_page_setting_key))) {
+        if (key.equals(getString(R.string.topic_setting_key)) || key.equals(getString(R.string.item_per_page_setting_key))) {
             mAdapter.clear();
             mEmptyStateTextView.setVisibility(View.GONE);
             View loadingIndicator = findViewById(R.id.loading_indicator);
@@ -97,10 +99,17 @@ public class NewsActivity extends AppCompatActivity
         String itemPerPage = sharedPreferences.getString(
                 getString(R.string.item_per_page_setting_key),
                 getString(R.string.item_per_page_setting_default));
+        String topic = sharedPreferences.getString(
+                getString(R.string.topic_setting_key),
+                getString(R.string.topic_setting_default));
 
         Uri baseUri = Uri.parse(GUARDIAN_REQUEST_URL);
         Uri.Builder uriBuilder = baseUri.buildUpon();
-        uriBuilder.appendQueryParameter(QUERY_PARAMETER_NAME, itemPerPage);
+        uriBuilder.appendQueryParameter(QUERY_PARAMETER_PAGE_SIZE, itemPerPage);
+
+        if (!topic.equals(getString(R.string.topic_setting_default))) {
+            uriBuilder.appendQueryParameter(QUERY_PARAMETER_TOPIC, topic);
+        }
 
         return new NewsLoader(this, uriBuilder.toString());
     }
