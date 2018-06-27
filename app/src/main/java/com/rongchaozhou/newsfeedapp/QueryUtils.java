@@ -3,9 +3,10 @@ package com.rongchaozhou.newsfeedapp;
 import android.text.TextUtils;
 import android.util.Log;
 
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
+import com.google.gson.*;
+
+
+
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -17,6 +18,8 @@ import java.net.URL;
 import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
+
 
 /**
  * Helper methods related to requesting and receiving news data from guardianAPI.
@@ -123,29 +126,24 @@ public final class QueryUtils {
         }
         List<News> newsList = new ArrayList<>();
         try {
-            JSONObject baseJsonResponse = new JSONObject(newsJSON);
-            JSONObject responseObject = baseJsonResponse.getJSONObject(KEY_JSON_RESPONSE);
-            JSONArray newsArray = responseObject.getJSONArray(KEY_JSON_RESULTS);
+            JsonElement jElement = new JsonParser().parse(newsJSON);
+            JsonObject baseJsonResponse = jElement.getAsJsonObject();
+            JsonObject responseObject = baseJsonResponse.getAsJsonObject(KEY_JSON_RESPONSE);
+            JsonArray newsArray = responseObject.getAsJsonArray(KEY_JSON_RESULTS);
 
-            for (int i = 0; i < newsArray.length(); i++) {
-                JSONObject currentNews = newsArray.getJSONObject(i);
-                String title = currentNews.getString(KEY_TITLE);
-                String date = currentNews.getString(KEY_DATE);
+            for (int i = 0; i < newsArray.size(); i++) {
+                JsonObject currentNews = newsArray.get(i).getAsJsonObject();
+                String title = currentNews.get(KEY_TITLE).getAsString();
+                String date = currentNews.get(KEY_DATE).getAsString();
+                Optional<JsonObject> authorField = Optional.ofNullable(currentNews.getAsJsonObject(KEY_AUTHOR_FIELD));
+                String author =  authorField.isPresent() ? authorField.get().get(KEY_AUTHOR).getAsString() : DEFAULT_AUTHOR_NAME;
 
-
-                String author = DEFAULT_AUTHOR_NAME;
-                try {
-                    JSONObject authorField = currentNews.getJSONObject(KEY_AUTHOR_FIELD);
-                    author = authorField.getString(KEY_AUTHOR);
-                } catch (JSONException e) {
-                }
-
-                String section = currentNews.getString(KEY_SECTION);
-                String url = currentNews.getString(KEY_URL);
+                String section = currentNews.get(KEY_SECTION).getAsString();
+                String url = currentNews.get(KEY_URL).getAsString();
                 News news = new News(title, date, author, section, url);
                 newsList.add(news);
             }
-        } catch (JSONException e) {
+        } catch (JsonIOException e) {
             Log.e("QueryUtils", "Problem parsing the News JSON results", e);
         }
         return newsList;
